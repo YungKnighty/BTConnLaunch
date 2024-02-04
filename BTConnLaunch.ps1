@@ -26,7 +26,7 @@ Add-Type -AssemblyName System.Windows.Forms
                against the OME server
 
   #>
-Function Log-Message
+Function Set-Log
 {
 	Param (
 		[Parameter(Mandatory)]
@@ -43,7 +43,7 @@ Function Log-Message
     Add-Content -Path "$PSScriptRoot\BTConnLog.log" -Value "$(Get-Date -Format `"dd/MM/yyyy | HH:mm:ss`") | $StatusFormat | $Message"
 }
 
-Function Check-ApplicationExist {
+Function Get-AppPath {
 	($ApplicationPath = Get-ChildItem -Filter ($ApplicationProcessName + ".exe") -File | 
 						Where-Object { $_.Name -ne $ExcludedName } |
 						Select-Object -ExpandProperty FullName -First 1)
@@ -53,7 +53,7 @@ Function Check-ApplicationExist {
 															[System.Windows.Forms.MessageBoxButtons]::RetryCancel,
 															"Error")
 		if ($msgBoxInput -eq "Retry") {
-			Check-ApplicationExist
+			Get-AppPath
 		} elseif ($msgBoxInput -eq "Cancel") {
 			exit
 		}
@@ -61,14 +61,14 @@ Function Check-ApplicationExist {
 }
 
 # Init variables
-Set-Variable -name ApplicationProcessName -option Constant -value ([string]"DS4*")
-Set-Variable -name ExcludedName -option Constant -value ([string]"DS4Updater.exe")
-Set-Variable -name BluetoothDeviceName -option Constant -value ([string]"Wireless Controller")
-Log-Message "Info" "Hi"
+Set-Variable -Name ApplicationProcessName -Option Constant -value ([string]"DS4*") -ErrorAction Ignore
+Set-Variable -Name ExcludedName -Option Constant -value ([string]"DS4Updater.exe") -ErrorAction Ignore
+Set-Variable -Name BluetoothDeviceName -Option Constant -value ([string]"Wireless Controller") -ErrorAction Ignore
+Set-Log "Info" "Hi"
 # Get BT Connectivity Data
 $BtStatus = Get-PnpDevice -class Bluetooth -FriendlyName $BluetoothDeviceName | 
   Get-PnpDeviceProperty -KeyName '{83DA6326-97A6-4088-9453-A1923F573B29} 15' |
-  Select -ExpandProperty Data
+  Select-Object -ExpandProperty Data
 
 # $BluetoothDeviceName Connected
 If ($BtStatus) {
