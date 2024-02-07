@@ -35,7 +35,7 @@ Function Set-Log
 		[Parameter(Mandatory)]
 		[String]$Message
 	)
-	if (-not [System.IO.File]::Exists("$PSScriptRoot\BTConnLog.log")) {
+	if (-not [System.IO.File]::Exists("$PSScriptRoot\BTConnDebug.log")) {
 		
 	}
 	
